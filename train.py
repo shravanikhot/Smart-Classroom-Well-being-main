@@ -103,7 +103,7 @@ def train_model(tfrecord_file, num_classes, epochs=10, batch_size=32):
 
 
 if __name__ == "__main__":
-    dataset_directory = "E:/Smart Classroom/dataset"  # Replace with your dataset directory
+    dataset_directory = "dataset"  # Replace with your dataset directory
     output_tfrecord = "train.tfrecord"
     create_tfrecord(dataset_directory, output_tfrecord)
 
