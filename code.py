@@ -1,10 +1,10 @@
-import cv2
 import numpy as np
 from deepface import DeepFace
 import matplotlib.pyplot as plt
 import tensorflow as tf
 from collections import Counter
 import logging
+import cv2
 
 # Setup logging
 logging.basicConfig(filename="errors.log", level=logging.ERROR)
@@ -30,12 +30,10 @@ negative_count = 0
 # Store the last prediction from the combined model
 last_combined_prediction = None  # 'Positive' or 'Negative'
 
-
 def preprocess_face(face_img):
     """Preprocess the face image for the mental health model."""
     resized_face = cv2.resize(face_img, (224, 224))
     return np.expand_dims(resized_face, axis=0) / 255.0
-
 
 while True:
     # Capture frame-by-frame
@@ -111,7 +109,7 @@ while True:
 
         # Display the last prediction continuously
         if last_combined_prediction:
-            cv2.putText(frame, f"Well-Being: {last_combined_prediction}", (x, y + h + 20),
+            cv2.putText(frame, f"{last_combined_prediction}", (x, y + h + 20),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
 
     # Display the resulting frame
@@ -153,7 +151,17 @@ def analyze_wellbeing(dominant_emotions):
         "Risk of Stress": stress_risk,
     }
 
+def calculate_wellbeing_score(emotion_means, combined_counts):
+    """Calculate an overall well-being score."""
+    combined_positive = combined_counts.get('Positive', 0)
+    combined_negative = combined_counts.get('Negative', 0)
+
+    # Weighted score formula
+    score = 50 + (((  (combined_positive - combined_negative)/(  combined_positive + combined_negative)) * 100)/2)
+    return score  
+
 wellbeing_report = analyze_wellbeing(dominant_emotions)
+wellbeing_score = calculate_wellbeing_score(emotion_means, combined_counts)
 
 # Display Plots
 def display_mean_probabilities(emotion_means):
@@ -177,17 +185,20 @@ def display_dominant_emotions(dominant_emotion_counts):
     plt.title('Dominant Emotion Distribution')
     plt.show()
 
-def display_wellbeing_report(wellbeing_report):
+def display_wellbeing_report(wellbeing_report, wellbeing_score):
     report_text = "\n".join([f"{key}: {value}" for key, value in wellbeing_report.items()])
+    report_text += f"\nWell-Being Score: {wellbeing_score:.2f}/100"
     plt.figure(figsize=(10, 4))
     plt.text(0.1, 0.5, report_text, fontsize=12, wrap=True)
     plt.title('Well-Being Report')
     plt.axis('off')
     plt.show()
-   
 
 # Call visualization functions
 display_mean_probabilities(emotion_means)
 display_combined_predictions(combined_counts)
 display_dominant_emotions(dominant_emotion_counts)
-display_wellbeing_report(wellbeing_report)
+display_wellbeing_report(wellbeing_report, wellbeing_score)
+
+   
+
