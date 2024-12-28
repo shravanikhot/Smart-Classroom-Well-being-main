@@ -8,6 +8,8 @@ Step 2: Activate the environment (don't continue to the following step without d
 
 Step 3: Install dependencies (pip install -r requirements.txt)
 
+Step 4: Run train.py (trained_mobilenetv2.model.h5 would be created)
+
 To run a test :
 
 code.py 
